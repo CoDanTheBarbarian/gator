@@ -14,42 +14,47 @@ type Config struct {
 }
 
 func getConfigFilePath() (string, error) {
-	path, err := os.UserHomeDir()
+	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", err
 	}
-	return path, nil
+	fullPath := filepath.Join(home, configFileName)
+	return fullPath, nil
 }
 
 func Read() (Config, error) {
-	home, err := getConfigFilePath()
+	fullPath, err := getConfigFilePath()
 	if err != nil {
 		return Config{}, err
 	}
-	configPath := filepath.Join(home + "/" + configFileName)
-	data, err := os.ReadFile(configPath)
+	file, err := os.Open(fullPath)
 	if err != nil {
 		return Config{}, err
 	}
-	config := Config{}
-	err = json.Unmarshal(data, &config)
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+	cfg := Config{}
+	err = decoder.Decode(&cfg)
 	if err != nil {
 		return Config{}, err
 	}
-	return config, nil
+	return cfg, nil
 }
 
 func write(cfg Config) error {
-	home, err := getConfigFilePath()
+	fullPath, err := getConfigFilePath()
 	if err != nil {
 		return err
 	}
-	data, err := json.Marshal(cfg)
+	file, err := os.Create(fullPath)
 	if err != nil {
 		return err
 	}
-	configPath := filepath.Join(home + "/" + configFileName)
-	err = os.WriteFile(configPath, data, 0644)
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	err = encoder.Encode(cfg)
 	if err != nil {
 		return err
 	}
