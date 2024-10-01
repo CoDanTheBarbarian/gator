@@ -1,15 +1,54 @@
 package main
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+	"time"
+
+	"github.com/CoDanTheBarbarian/gator/internal/database"
+	"github.com/google/uuid"
+)
 
 func handlerLogin(s *state, cmd command) error {
 	if len(cmd.input) != 1 {
 		return fmt.Errorf("usage: %s <name>", cmd.name)
 	}
-	err := s.cfg.SetUser(cmd.input[0])
+	name := cmd.input[0]
+	_, err := s.db.GetUser(context.Background(), name)
+	if err != nil {
+		return fmt.Errorf("couldn't find user: %w", err)
+	}
+	err = s.cfg.SetUser(name)
 	if err != nil {
 		return fmt.Errorf("failed to set current user: %w", err)
 	}
-	fmt.Printf("username: %s has been set.\n", cmd.input[0])
+	fmt.Printf("username: %s has been set.\n", name)
 	return nil
+}
+
+func handlerRegister(s *state, cmd command) error {
+	if len(cmd.input) != 1 {
+		return fmt.Errorf("usage: %s <name>", cmd.name)
+	}
+	user, err := s.db.CreateUser(context.Background(), database.CreateUserParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name:      cmd.input[0],
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create user: %w", err)
+	}
+	err = s.cfg.SetUser(user.Name)
+	if err != nil {
+		return fmt.Errorf("failed to set created user, error: %w", err)
+	}
+	fmt.Println("User successfully created")
+	printUser(user)
+	return nil
+}
+
+func printUser(user database.User) {
+	fmt.Printf(" * ID:      %v\n", user.ID)
+	fmt.Printf(" * Name:    %v\n", user.Name)
 }
