@@ -37,6 +37,7 @@ func main() {
 	}
 	mainCommands.register("login", handlerLogin)
 	mainCommands.register("register", handlerRegister)
+	mainCommands.register("reset", handlerReset)
 
 	if len(os.Args) < 2 {
 		fmt.Println("invalid input")
