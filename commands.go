@@ -19,7 +19,6 @@ func (c *commands) register(name string, f func(*state, command) error) {
 		return
 	}
 	c.commandNameMap[name] = f
-	fmt.Printf("command '%s' successfully registered\n", name)
 }
 
 func (c *commands) run(s *state, cmd command) error {
