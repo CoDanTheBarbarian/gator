@@ -40,6 +40,7 @@ func main() {
 	mainCommands.register("reset", handlerReset)
 	mainCommands.register("users", handlerListUsers)
 	mainCommands.register("agg", handlerAggregate)
+	mainCommands.register("addfeed", handlerAddFeed)
 
 	if len(os.Args) < 2 {
 		fmt.Println("invalid input")
