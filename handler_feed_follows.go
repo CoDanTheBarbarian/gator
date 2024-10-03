@@ -9,13 +9,9 @@ import (
 	"github.com/google/uuid"
 )
 
-func handlerFollow(s *state, cmd command) error {
+func handlerFollow(s *state, cmd command, user database.User) error {
 	if len(cmd.input) != 1 {
 		return fmt.Errorf("usage: follow <url>")
-	}
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("failed to get user info: %v", err)
 	}
 	feed, err := s.db.GetFeedFromUrl(context.Background(), cmd.input[0])
 	if err != nil {
@@ -35,13 +31,9 @@ func handlerFollow(s *state, cmd command) error {
 	return nil
 }
 
-func handlerFollowing(s *state, cmd command) error {
+func handlerFollowing(s *state, cmd command, user database.User) error {
 	if len(cmd.input) > 0 {
 		return fmt.Errorf("no argument required for following command")
-	}
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("failed to get user info: %v", err)
 	}
 	followRows, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {

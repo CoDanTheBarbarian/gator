@@ -40,10 +40,10 @@ func main() {
 	mainCommands.register("reset", handlerReset)
 	mainCommands.register("users", handlerListUsers)
 	mainCommands.register("agg", handlerAggregate)
-	mainCommands.register("addfeed", handlerAddFeed)
+	mainCommands.register("addfeed", middlewareLoggedIn(handlerAddFeed))
 	mainCommands.register("feeds", handlerGetFeeds)
-	mainCommands.register("follow", handlerFollow)
-	mainCommands.register("following", handlerFollowing)
+	mainCommands.register("follow", middlewareLoggedIn(handlerFollow))
+	mainCommands.register("following", middlewareLoggedIn(handlerFollowing))
 
 	if len(os.Args) < 2 {
 		fmt.Println("invalid input")
