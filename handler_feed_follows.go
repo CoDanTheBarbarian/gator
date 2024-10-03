@@ -44,3 +44,35 @@ func handlerFollowing(s *state, cmd command, user database.User) error {
 	}
 	return nil
 }
+
+func handlerUnfollow(s *state, cmd command, user database.User) error {
+	if len(cmd.input) != 1 {
+		return fmt.Errorf("usage: unfollow <feed_url>")
+	}
+	feed, err := s.db.GetFeedFromUrl(context.Background(), cmd.input[0])
+	if err != nil {
+		return err
+	}
+	following, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
+	if err != nil {
+		return err
+	}
+	followed := false
+	for _, entries := range following {
+		if entries.FeedID == feed.ID {
+			followed = true
+		}
+	}
+	if !followed {
+		return fmt.Errorf("you are not currently following feed: %s", cmd.input[0])
+	}
+	err = s.db.DeleteFeedFollowEntry(context.Background(), database.DeleteFeedFollowEntryParams{
+		UserID: user.ID,
+		FeedID: feed.ID,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to unfollow %s error: %v", cmd.input[0], err)
+	}
+	fmt.Printf("You are no longer following feed: %v\n", feed.Name)
+	return nil
+}

@@ -44,6 +44,7 @@ func main() {
 	mainCommands.register("feeds", handlerGetFeeds)
 	mainCommands.register("follow", middlewareLoggedIn(handlerFollow))
 	mainCommands.register("following", middlewareLoggedIn(handlerFollowing))
+	mainCommands.register("unfollow", middlewareLoggedIn(handlerUnfollow))
 
 	if len(os.Args) < 2 {
 		fmt.Println("invalid input")
