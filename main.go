@@ -42,6 +42,8 @@ func main() {
 	mainCommands.register("agg", handlerAggregate)
 	mainCommands.register("addfeed", handlerAddFeed)
 	mainCommands.register("feeds", handlerGetFeeds)
+	mainCommands.register("follow", handlerFollow)
+	mainCommands.register("following", handlerFollowing)
 
 	if len(os.Args) < 2 {
 		fmt.Println("invalid input")
