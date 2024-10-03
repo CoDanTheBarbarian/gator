@@ -17,16 +17,16 @@ func handlerFollow(s *state, cmd command) error {
 	if err != nil {
 		return fmt.Errorf("failed to get user info: %v", err)
 	}
-	feed_id, err := s.db.GetFeedIdFromUrl(context.Background(), cmd.input[0])
+	feed, err := s.db.GetFeedFromUrl(context.Background(), cmd.input[0])
 	if err != nil {
 		return fmt.Errorf("failed to get feed from url: %v - add feed to database", cmd.input[0])
 	}
 	row, err := s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
 		ID:        uuid.New(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
 		UserID:    user.ID,
-		FeedID:    feed_id,
+		FeedID:    feed.ID,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create feed_follow entry: %v", err)
